@@ -59,13 +59,14 @@ class END(BaseRecord):
     structures found in a coordinate entry.
     """
 
-    def __init__(self, line):
-        """Initialize with line.
 
-        :param line:  line with PDB class
-        :type line:  str
-        """
-        super().__init__(line)
+#    def __init__(self, line):
+#        """Initialize with line.
+#
+#         :param line:  line with PDB class
+#         :type line:  str
+#         """
+#         super().__init__(line)
 
 
 @register_line_parser
@@ -248,8 +249,8 @@ class ENDMDL(BaseRecord):
     structures found in a coordinate entry.
     """
 
-    def __init__(self, line):
-        super().__init__(line)
+    # def __init__(self, line):
+    #     super().__init__(line)
 
 
 @register_line_parser
@@ -565,8 +566,10 @@ class HETATM(BaseRecord):
             self.chain_id = line[21].strip()
             self.res_seq = int(line[22:26].strip())
             self.ins_code = line[26].strip()
-        except IndexError:
-            raise ValueError("Residue name must be less than 4 characters!")
+        except IndexError as err:
+            raise ValueError(
+                "Residue name must be less than 4 characters!"
+            ) from err
         self.x = float(line[30:38].strip())
         self.y = float(line[38:46].strip())
         self.z = float(line[46:54].strip())
@@ -1781,7 +1784,7 @@ class MODRES(BaseRecord):
         +---------+--------+----------+--------------------------------------+
         | 23      | string | ins_code | Insertion code.                      |
         +---------+--------+----------+--------------------------------------+
-        | 25-27   | string | stdRes   | Standard residue name.               |
+        | 25-27   | string | std_res  | Standard residue name.               |
         +---------+--------+----------+--------------------------------------+
         | 30-70   | string | comment  | Description of the residue           |
         |         |        |          | modification.                        |
@@ -1796,7 +1799,7 @@ class MODRES(BaseRecord):
         self.chain_id = line[16].strip()
         self.seq_num = int(line[18:22].strip())
         self.ins_code = line[22].strip()
-        self.stdRes = line[24:27].strip()
+        self.std_res = line[24:27].strip()
         self.comment = line[29:70].strip()
 
 
@@ -2579,29 +2582,28 @@ def read_pdb(file_):
                 obj = klass(line)
                 pdblist.append(obj)
         except (KeyError, ValueError) as details:
-            if record not in ["HETATM", "ATOM"]:
-                errlist.append(record)
-                _LOGGER.error(f"Error parsing line: {details}")
-                _LOGGER.error(f"<{line.strip()}>")
-                _LOGGER.error(
-                    f"Truncating remaining errors for record type:{record}"
-                )
-            else:
+            if record in ["HETATM", "ATOM"]:
                 raise details
+            errlist.append(record)
+            _LOGGER.error("Error parsing line: %s", details)
+            _LOGGER.error("<%s>", line.strip())
+            _LOGGER.error(
+                "Truncating remaining errors for record type:%s", record
+            )
         except IndexError as details:
             if record in ["ATOM", "HETATM"]:
                 try:
                     obj = read_atom(line)
                     pdblist.append(obj)
                 except IndexError as details:
-                    _LOGGER.error(f"Error parsing line: {details},")
-                    _LOGGER.error(f"<{line.strip()}>")
+                    _LOGGER.error("Error parsing line: %s", details)
+                    _LOGGER.error("<%s>", line.strip())
             elif record in ["SITE", "TURN"]:
                 pass
             elif record in ["SSBOND", "LINK"]:
                 _LOGGER.error("Warning -- ignoring record:")
-                _LOGGER.error(f"<{line.strip()}>")
+                _LOGGER.error("<%s>", line.strip())
             else:
-                _LOGGER.error(f"Error parsing line: {details},")
-                _LOGGER.error(f"<{line.strip()}>")
+                _LOGGER.error("Error parsing line: %s", details)
+                _LOGGER.error("<%s>", line.strip())
     return pdblist, errlist

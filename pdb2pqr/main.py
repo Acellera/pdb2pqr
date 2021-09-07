@@ -230,7 +230,7 @@ def print_splash_screen(args):
     :param args:  command-line arguments
     :type args:  argparse.Namespace
     """
-    _LOGGER.debug(f"Args:  {args}")
+    _LOGGER.debug("Args: %s", args)
     _LOGGER.info(TITLE_STR)
     for citation in CITATIONS:
         _LOGGER.info(citation)
@@ -303,11 +303,11 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
         # Adding whitespaces if --whitespace is in the options
         if header_lines:
             _LOGGER.warning(
-                f"Ignoring {len(header_lines)} header lines in output."
+                "Ignoring %s header lines in output.", len(header_lines)
             )
         if missing_lines:
             _LOGGER.warning(
-                f"Ignoring {len(missing_lines)} missing lines in output."
+                "Ignoring %s missing lines in output.", len(missing_lines)
             )
         for line in pqr_lines:
             if args.whitespace:
@@ -346,11 +346,11 @@ def print_pdb(args, pdb_lines, header_lines, missing_lines, is_cif):
         # Adding whitespaces if --whitespace is in the options
         if header_lines:
             _LOGGER.warning(
-                f"Ignoring {len(header_lines)} header lines in output."
+                "Ignoring %s header lines in output.", len(header_lines)
             )
         if missing_lines:
             _LOGGER.warning(
-                f"Ignoring {len(missing_lines)} missing lines in output."
+                "Ignoring %s missing lines in output.", len(missing_lines)
             )
         for line in pdb_lines:
             if line[0:3] != "TER" or not is_cif:
@@ -400,22 +400,23 @@ def setup_molecule(pdblist, definition, ligand_path):
         ligand = None
     biomolecule = biomol.Biomolecule(pdblist, definition)
     _LOGGER.info(
-        f"Created biomolecule object with {len(biomolecule.residues)} "
-        f"residues and {len(biomolecule.atoms)} atoms."
+        "Created biomolecule object with %s residues and %s atoms.",
+        len(biomolecule.residues),
+        len(biomolecule.atoms),
     )
     for residue in biomolecule.residues:
         multoccupancy = False
         for atom in residue.atoms:
             if atom.alt_loc != "":
                 multoccupancy = True
-                txt = f"Multiple occupancies found: {atom.name} in {residue}."
-                _LOGGER.warning(txt)
+                _LOGGER.warning(
+                    "Multiple occupancies found: %s in %s.", atom.name, residue
+                )
         if multoccupancy:
-            err = (
-                f"Multiple occupancies found in {residue}. At least one of "
-                "the instances is being ignored."
+            _LOGGER.warning(
+                "Multiple occupancies found in %s. At least one of the instances is being ignored.",
+                residue,
             )
-            _LOGGER.warning(err)
     return biomolecule, definition, ligand
 
 
@@ -601,14 +602,14 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
     debumper = debump.Debump(biomolecule)
     pka_df = None
     if args.assign_only:
-        # TODO - I don't understand why HIS needs to be set to HIP for
+        # TODO - I don't understand why THIS needs to be set to HIP for
         # assign-only
         biomolecule.set_hip()
     else:
         if is_repairable(biomolecule, args.ligand is not None):
             _LOGGER.info(
-                f"Attempting to repair {biomolecule.num_missing_heavy:d} "
-                "missing atoms in biomolecule."
+                "Attempting to repair %d missing atoms in biomolecule.",
+                biomolecule.num_missing_heavy,
             )
             biomolecule.repair_heavy()
         _LOGGER.info("Updating disulfide bridges.")
@@ -618,13 +619,13 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             try:
                 debumper.debump_biomolecule()
             except ValueError as err:
-                err = f"Unable to debump biomolecule. {err}"
-                raise ValueError(err)
+                err_msg = f"Unable to debump biomolecule. {err}"
+                raise ValueError(err_msg) from err
         if args.pka_method == "propka":
             _LOGGER.info("Assigning titration states with PROPKA.")
             biomolecule.remove_hydrogens()
             pka_df, pka_str = run_propka(args, biomolecule)
-            _LOGGER.info(f"PROPKA information:\n{pka_str}")
+            _LOGGER.info("PROPKA information:\n%s", pka_str)
             biomolecule.apply_pka_values(
                 forcefield_.name,
                 args.ph,
@@ -686,7 +687,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             )
             raise ValueError(err)
     if args.ffout is not None:
-        _LOGGER.info(f"Applying custom naming scheme ({args.ffout}).")
+        _LOGGER.info("Applying custom naming scheme (%s).", args.ffout)
         if args.ffout != args.ff:
             name_scheme = forcefield.Forcefield(args.ffout, definition, None)
         else:
@@ -736,7 +737,7 @@ def main_driver(args):
     :type args:  argparse.Namespace
     """
     io.setup_logger(args.output_pqr, args.log_level)
-    _LOGGER.debug(f"Invoked with arguments: {args}")
+    _LOGGER.debug("Invoked with arguments: %s", args)
     print_splash_screen(args)
     _LOGGER.info("Checking and transforming input arguments.")
     args = transform_arguments(args)
@@ -744,7 +745,7 @@ def main_driver(args):
     check_options(args)
     _LOGGER.info("Loading topology files.")
     definition = io.get_definitions()
-    _LOGGER.info(f"Loading molecule: {args.input_path}")
+    _LOGGER.info("Loading molecule: %s", args.input_path)
     pdblist, is_cif = io.get_molecule(args.input_path)
     if args.drop_water:
         _LOGGER.info("Dropping water from structure.")
@@ -839,13 +840,13 @@ def dx_to_cube():
     args = parser.parse_args()
     log_level = getattr(logging, args.log_level)
     logging.basicConfig(level=log_level)
-    _LOGGER.debug(f"Got arguments: {args}", args)
-    _LOGGER.info(f"Reading PQR from {args.pqr_input}...")
+    _LOGGER.debug("Got arguments: %s", args)
+    _LOGGER.info("Reading PQR from %s...", args.pqr_input)
     with open(args.pqr_input, "rt") as pqr_file:
         atom_list = io.read_pqr(pqr_file)
-    _LOGGER.info(f"Reading DX from {args.dx_input}...")
+    _LOGGER.info("Reading DX from %s...", args.dx_input)
     with open(args.dx_input, "rt") as dx_file:
         dx_dict = io.read_dx(dx_file)
-    _LOGGER.info(f"Writing Cube to {args.output}...")
+    _LOGGER.info("Writing Cube to %s...", args.output)
     with open(args.output, "wt") as cube_file:
         io.write_cube(cube_file, dx_dict, atom_list)
