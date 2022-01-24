@@ -43,7 +43,7 @@ try:
     version = version[1:]  # Skip the v at the begginig
 except Exception:
     print("Could not get version tag. Defaulting to version 0")
-    version = "0"
+    version = "0.0.0"
 
 # Write the version file
 with open("pdb2pqr/_version.py", "w") as f:
