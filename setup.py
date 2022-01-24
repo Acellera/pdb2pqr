@@ -40,6 +40,7 @@ try:
         .strip()
         .decode("utf-8")
     )
+    version = version[1:]  # Skip the v at the begginig
 except Exception:
     print("Could not get version tag. Defaulting to version 0")
     version = "0"
