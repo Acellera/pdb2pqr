@@ -8,5 +8,5 @@ def test_version_exists():
 
 
 def test_version():
-    assert re.match(r"[0-9]+\.[0-9]+\.[0-9]+", __version__)
+    assert re.match(r"[0-9]+\.[0-9]+\.[0-9]+[\+]?[0-9]*", __version__)
     print(f"VERSION: {__version__}")
