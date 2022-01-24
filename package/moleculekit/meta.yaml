@@ -1,0 +1,39 @@
+package:
+  name: pdb2pqr
+  version: {{ environ.get('BUILD_VERSION', 0 ) }}
+
+source:
+   path: ../..
+
+build:
+  number: {{ environ.get('BUILD_NUMBER', 0 ) }}
+
+requirements:
+  host:
+    - python
+    - cython
+    - numpy>=1.18.5
+    - mmcif_pdbx>=1.1.2
+    - numpy
+    - propka>=3.2
+    - requests
+    - docutils<0.18
+  run:
+    - python
+    - mmcif_pdbx>=1.1.2
+    - numpy
+    - propka>=3.2
+    - requests
+    - docutils<0.18
+
+about:
+  home: https://github.com/acellera/pdb2pqr/
+  license: "Custom"
+  license_file: LICENSE.md
+  summary: A molecule reading/writing and manipulation package.
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - stefdoerr
