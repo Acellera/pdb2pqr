@@ -3,40 +3,40 @@ name: Test code and publish package
 on: [push]
 
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
-  #   if: "!contains(github.event.head_commit.message, 'noci')"
-  #   strategy:
-  #     matrix:
-  #       python-version: [3.6, 3.7, 3.8, 3.9]
+  test:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'noci')"
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
 
-  #   steps:
-  #     - uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v2
 
-  #     - name: Set up Python ${{ matrix.python-version }}
-  #       uses: actions/setup-python@v2
-  #       with:
-  #         python-version: ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         pip install black flake8 pytest coverage
-  #         pip install -e .
-  #         pip install -e .[test]
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black flake8 pytest coverage
+          pip install -e .
+          pip install -e .[test]
 
-  #     - name: Lint with flake8
-  #       run: |
-  #         # stop the build if there are Python syntax errors or undefined names
-  #         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-  #         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-  #         flake8 . --count --exit-zero --statistics
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --statistics
 
-  #     - name: Test with pytest and coverage
-  #       run: |
-  #         coverage run --source=pdb2pqr -m pytest
-  #         coverage report -m | tee coverage.txt
-  #         coverage html
+      - name: Test with pytest and coverage
+        run: |
+          coverage run --source=pdb2pqr -m pytest
+          coverage report -m | tee coverage.txt
+          coverage html
 
   deploy:
     if: startsWith(github.event.ref, 'refs/tags/')
