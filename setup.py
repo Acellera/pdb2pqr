@@ -32,8 +32,21 @@ from setuptools import find_packages, setup
 #       if available to the packaging tools before installation.
 #       REF: https://stackoverflow.com/questions/458550/standard-way-to-embed-version-into-python-package  # noqa: E501
 #       This makes __version__ valid below
-with open("pdb2pqr/_version.py") as fobj:
-    exec(fobj.read())
+try:
+    import subprocess
+
+    version = (
+        subprocess.check_output(["git", "describe", "--abbrev=0", "--tags"])
+        .strip()
+        .decode("utf-8")
+    )
+except Exception:
+    print("Could not get version tag. Defaulting to version 0")
+    version = "0"
+
+# Write the version file
+with open("pdb2pqr/_version.py", "w") as f:
+    f.write(f'__version__ = "{version}"\n')
 
 if version_info[:2] < (3, 6):
     raise RuntimeError("Python version >= 3.6 is required.")
@@ -43,7 +56,7 @@ with open("README.md", "r") as fobj:
 
 setup(
     name="pdb2pqr",
-    version=__version__,  # noqa: F821
+    version=version,  # noqa: F821
     author="Jens Erik Nielsen, Nathan Baker, and many others.",
     author_email="nathanandrewbaker@gmail.com",
     description=(
@@ -52,13 +65,13 @@ setup(
         "biomolecular structure modeling, analysis, and simulation."
     ),
     long_description=LONG_DESCRIPTION,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     install_requires=[
         "mmcif_pdbx>=1.1.2",
         "numpy",
         "propka >= 3.2",
         "requests",
-        "docutils < 0.18"
+        "docutils < 0.18",
     ],
     url="http://www.poissonboltzmann.org",
     packages=find_packages(

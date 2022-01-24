@@ -64,7 +64,6 @@ jobs:
         export BUILD_VERSION=$(echo $TAG_DESCRIBE | sed 's/-/ /g'  | awk '{print $1}')
         conda install anaconda-client conda-build python=${{ matrix.python-version }}
         export CONDA_PY=${{ matrix.python-version }}
-        python .github/workflows/insert_placeholder_values.py
         conda build --python ${{ matrix.python-version }} package/pdb2pqr/ --output-folder ./pkg/ --no-include-recipe --no-anaconda-upload -c conda-forge
 
     - name: Upload to conda
