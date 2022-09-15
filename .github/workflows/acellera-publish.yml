@@ -62,7 +62,7 @@ jobs:
         run: |
           export TAG_DESCRIBE=$(git describe)
           export BUILD_VERSION=$(echo $TAG_DESCRIBE | sed 's/-/ /g'  | awk '{print $1}' | cut -c2-)
-          conda install anaconda-client conda-build boa python=${{ matrix.python-version }}
+          conda install anaconda-client conda-build boa python=${{ matrix.python-version }} -c conda-forge
           export CONDA_PY=${{ matrix.python-version }}
           conda mambabuild --python ${{ matrix.python-version }} package/pdb2pqr/ --output-folder ./pkg/ --no-include-recipe --no-anaconda-upload -c conda-forge
 
