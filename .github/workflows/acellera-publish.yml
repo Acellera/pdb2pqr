@@ -8,7 +8,7 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'noci')"
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.8, 3.9, 3.10]
 
     steps:
       - uses: actions/checkout@v2
@@ -47,26 +47,26 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.6", "3.7", "3.8", "3.9"]
+        python-version: [3.8, 3.9, 3.10]
 
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v1
 
-    - uses: conda-incubator/setup-miniconda@v2
-      with:
-        activate-environment: deploy
-        python-version: ${{ matrix.python-version }}
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: deploy
+          python-version: ${{ matrix.python-version }}
 
-    - name: Build pdb2pqr package
-      shell: bash -l {0}
-      run: |
-        export TAG_DESCRIBE=$(git describe)
-        export BUILD_VERSION=$(echo $TAG_DESCRIBE | sed 's/-/ /g'  | awk '{print $1}' | cut -c2-)
-        conda install anaconda-client conda-build python=${{ matrix.python-version }}
-        export CONDA_PY=${{ matrix.python-version }}
-        conda build --python ${{ matrix.python-version }} package/pdb2pqr/ --output-folder ./pkg/ --no-include-recipe --no-anaconda-upload -c conda-forge
+      - name: Build pdb2pqr package
+        shell: bash -l {0}
+        run: |
+          export TAG_DESCRIBE=$(git describe)
+          export BUILD_VERSION=$(echo $TAG_DESCRIBE | sed 's/-/ /g'  | awk '{print $1}' | cut -c2-)
+          conda install anaconda-client conda-build python=${{ matrix.python-version }}
+          export CONDA_PY=${{ matrix.python-version }}
+          conda build --python ${{ matrix.python-version }} package/pdb2pqr/ --output-folder ./pkg/ --no-include-recipe --no-anaconda-upload -c conda-forge
 
-    - name: Upload to conda
-      shell: bash -l {0}
-      run: |
-        anaconda -t ${{ secrets.ANACONDA_TOKEN_BASIC }} upload -u acellera ./pkg/*/pdb2pqr-*.tar.bz2
+      - name: Upload to conda
+        shell: bash -l {0}
+        run: |
+          anaconda -t ${{ secrets.ANACONDA_TOKEN_BASIC }} upload -u acellera ./pkg/*/pdb2pqr-*.tar.bz2
