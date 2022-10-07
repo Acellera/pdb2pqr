@@ -17,14 +17,14 @@ build:
 requirements:
   host:
     - pip
-    - python >= 3.6
+    - python>=3.6
   run:
-    - python >=3.6
-    - mmcif_pdbx >=1.1.2
-    - numpy >=1.17
-    - propka >=3.2
+    - python>=3.6
+    - mmcif_pdbx>=1.1.2
+    - numpy>=1.17
+    - propka>=3.2
     - requests
-    - docutils <0.18
+    - docutils<0.18
 
 about:
   home: https://github.com/acellera/pdb2pqr/
