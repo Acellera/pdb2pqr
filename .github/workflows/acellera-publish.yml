@@ -47,7 +47,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.10"]
 
     steps:
       - uses: actions/checkout@v1
@@ -64,7 +64,7 @@ jobs:
           export BUILD_VERSION=$(echo $TAG_DESCRIBE | sed 's/-/ /g'  | awk '{print $1}' | cut -c2-)
           conda install anaconda-client conda-build python=${{ matrix.python-version }}
           export CONDA_PY=${{ matrix.python-version }}
-          conda build --python ${{ matrix.python-version }} package/pdb2pqr/ --output-folder ./pkg/ --no-include-recipe --no-anaconda-upload -c conda-forge
+          conda build package/pdb2pqr/ --output-folder ./pkg/ --no-include-recipe --no-anaconda-upload -c conda-forge
 
       - name: Upload to conda
         shell: bash -l {0}
