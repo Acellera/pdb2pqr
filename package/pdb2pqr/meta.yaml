@@ -6,23 +6,25 @@ source:
   path: ../..
 
 build:
+  noarch: python
   number: {{ environ.get('BUILD_NUMBER', 0 ) }}
+  entry_points:
+    - pdb2pqr30=pdb2pqr.main:main
+    - dx2cube=pdb2pqr.main:dx_to_cube
+    - psize=pdb2pqr.psize:main
+    - inputgen=pdb2pqr.inputgen:main
 
 requirements:
   host:
-    - python
-    - mmcif_pdbx>=1.1.2
-    - numpy>=1.17
-    - propka>=3.2
-    - requests
-    - docutils<0.18
+    - pip
+    - python >= 3.6
   run:
-    - python
-    - mmcif_pdbx>=1.1.2
-    - numpy>=1.17
-    - propka>=3.2
+    - python >=3.6
+    - mmcif_pdbx >=1.1.2
+    - numpy >=1.17
+    - propka >=3.2
     - requests
-    - docutils<0.18
+    - docutils <0.18
 
 about:
   home: https://github.com/acellera/pdb2pqr/
