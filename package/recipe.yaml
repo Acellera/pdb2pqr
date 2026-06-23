@@ -1,0 +1,50 @@
+context:
+  version: ${{ env.get("PKG_VERSION") }}
+
+package:
+  name: acellera-pdb2pqr
+  version: ${{ version }}
+
+source:
+  path: ..
+
+build:
+  noarch: python
+  script: python -m pip install --no-deps -vv .
+  python:
+    entry_points:
+      - pdb2pqr = pdb2pqr.main:main
+      - pdb2pqr30 = pdb2pqr.main:main
+      - dx2cube = pdb2pqr.main:dx_to_cube
+      - inputgen = pdb2pqr.inputgen:main
+
+requirements:
+  host:
+    - pip
+    - python
+    - hatchling
+  run:
+    - python
+    - numpy
+    - propka >=3.5
+    - requests
+    - typing_extensions
+    - mmcif_pdbx >=1.1.2
+
+tests:
+  - python:
+      imports:
+        - pdb2pqr
+
+about:
+  homepage: https://www.poissonboltzmann.org
+  license: BSD-3-Clause
+  license_file: LICENSE.md
+  summary: >-
+    Automates preparation of structures for continuum solvation calculations
+    as well as other biomolecular structure modeling, analysis, and simulation.
+  repository: https://github.com/Acellera/pdb2pqr
+
+extra:
+  recipe-maintainers:
+    - stefdoerr

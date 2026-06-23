@@ -19,7 +19,7 @@ include = [
 packages = ["pdb2pqr"]
 
 [project]
-name = "pdb2pqr"
+name = "acellera-pdb2pqr"
 dynamic = ["version"]
 description = """
 Automates many of the common tasks of preparing structures for \
