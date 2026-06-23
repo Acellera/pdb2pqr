@@ -257,7 +257,11 @@ class Biomolecule:
                 # Look for ending termini
                 fixflag = 0
                 if isinstance(residue, aa.Amino):
-                    if residue.has_atom("OXT") and not residue.is_c_term:
+                    if (
+                        residue.has_atom("OXT")
+                        and not residue.is_c_term
+                        and not getattr(residue, "c_term_blocked", False)
+                    ):
                         fixflag = 1
                 elif (
                     isinstance(residue, na.Nucleic)
@@ -514,8 +518,14 @@ class Biomolecule:
                 # If the chain is cyclic, don't apply termini.
                 return
 
+        # users may flag a backbone N/C that an inter-residue amide already
+        # continues (a stretched closure or an isopeptide the distance check above
+        # cannot see), so that side is not a free terminus and is left uncapped.
+        n_blocked = getattr(res0, "n_term_blocked", False)
+        c_blocked = getattr(reslast, "c_term_blocked", False)
+
         # Set the N-Terminus/ 5' Terminus
-        if isinstance(res0, aa.Amino):
+        if isinstance(res0, aa.Amino) and not n_blocked:
             res0.is_n_term = True
             # If N is bonded to more than one heavy atom switch to neutral-nterm
             heavy_n_bonds = []
@@ -528,20 +538,20 @@ class Biomolecule:
                 self.apply_patch("NEUTRAL-NTERM", res0)
             else:
                 self.apply_patch("NTERM", res0)
-        elif isinstance(res0, na.Nucleic):
+        elif isinstance(res0, na.Nucleic) and not n_blocked:
             res0.is5term = True
             self.apply_patch("5TERM", res0)
         # Set the C-Terminus/ 3' Terminus
-        if isinstance(reslast, aa.Amino):
+        if isinstance(reslast, aa.Amino) and not c_blocked:
             reslast.is_c_term = True
             if neutralc:
                 self.apply_patch("NEUTRAL-CTERM", reslast)
             else:
                 self.apply_patch("CTERM", reslast)
-        elif isinstance(reslast, na.Nucleic):
+        elif isinstance(reslast, na.Nucleic) and not c_blocked:
             reslast.is3term = True
             self.apply_patch("3TERM", reslast)
-        else:
+        elif not c_blocked:
             for i in range(len(chain.residues)):
                 resthis = chain.residues[-1 - i]
                 if isinstance(resthis, aa.Amino):
