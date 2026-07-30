@@ -56,7 +56,12 @@ keywords = ["science", "chemistry", "molecular biology"]
 dependencies = [
   "mmcif_pdbx>=1.1.2",
   "numpy",
-  "propka >= 3.5",
+  # The Acellera fork, not upstream propka. Both distributions install the same
+  # propka package directory, so depending on upstream here means anything that
+  # also wants the fork ends up with both, and whichever is written last wins.
+  # That race silently downgrades the fork's fixes, including the Python 3.14
+  # annotations fix that upstream 3.5.1 does not have.
+  "acellera-propka >= 3.5.1.post1",
   "requests",
   "typing-extensions",
 ]

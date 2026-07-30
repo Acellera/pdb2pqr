@@ -2,7 +2,7 @@ sphinx==7.2.6
 sphinx_rtd_theme==2.0.0
 sphinx_sitemap==2.5.1
 readthedocs-sphinx-search==0.3.2
-propka >= 3.5
+acellera-propka >= 3.5.1.post1
 numpy
 pdbx
 mmcif_pdbx>=1.1.2
