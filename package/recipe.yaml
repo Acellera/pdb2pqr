@@ -26,11 +26,12 @@ requirements:
   run:
     - python
     - numpy
-    # Upstream propka, unlike the PyPI dependency which uses the acellera-propka
-    # fork. The fork is not published to any conda channel, so conda builds get
-    # upstream and therefore lack its fixes, including the Python 3.14
-    # annotations fix. Switch this to the fork once it is released on conda.
-    - propka >=3.5
+    # The Acellera fork, matching the PyPI dependency. Depending on upstream
+    # propka here would leave conda users without the fork's fixes, including the
+    # Python 3.14 annotations fix, and would fail pip check since the wheel asks
+    # for acellera-propka. Served from the acellera channel, which this recipe's
+    # build already passes via -c acellera.
+    - acellera-propka >=3.5.1.post1
     - requests
     - typing_extensions
     - mmcif_pdbx >=1.1.2
